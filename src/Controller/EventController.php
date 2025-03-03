@@ -14,6 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\EventRepository;
 
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\LabelAlignment;
+use Endroid\QrCode\Label\Font\OpenSans;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 
 final class EventController extends AbstractController
 {
@@ -99,34 +106,69 @@ final class EventController extends AbstractController
     public function participateEvent(Request $request, EntityManagerInterface $entityManager, int $eventId): Response
     {
         // Fetch the event by ID
-                // Get the current logged-in user (the owner)
-                $user = $this->getUser();
-
         $event = $entityManager->getRepository(Event::class)->find($eventId);
-
+    
         if (!$event) {
             throw $this->createNotFoundException('Event not found.');
         }
-
-
-
+    
+        // Get the current logged-in user (the owner)
+        $user = $this->getUser();
+    
         if (!$user) {
             throw $this->createNotFoundException('Owner not found.');
         }
-
+    
         // Create a new Ticket
         $ticket = new Ticket();
         $ticket->setEvent($event);
         $ticket->setOwner($user);
-
+    
         // Add the owner to the event's participants list
         $event->addParticipant($user);
-
-        // Save the ticket and update the event
+    
+        // **Persist and flush the ticket first to get the ID**
         $entityManager->persist($ticket);
+        $entityManager->flush(); // Now the ticket has an ID
+    
+        // **Generate QR Code AFTER persisting**
+        $qrCodeData = json_encode([
+            'ticket_id' => $ticket->getId(), // Now it has a valid ID
+            'owner' => $user->getUsername(),
+            'event' => $event->getName(),
+        ]);
+    
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $qrCodeData,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Low,
+            size: 40,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            logoPath: '',
+            logoResizeToWidth: 50,
+            logoPunchoutBackground: false,
+            labelText: '',
+            labelFont: new OpenSans(20),
+            labelAlignment: LabelAlignment::Center
+        );
+    
+        $qrCodeResult = $builder->build();
+    
+        // **Save the QR code image to a file**
+        $qrCodeImagePath = $this->getParameter('kernel.project_dir') . '/public/qrcodes/ticket_' . $ticket->getId() . '.png';
+        $qrCodeResult->saveToFile($qrCodeImagePath);
+    
+        // **Set the correct QR code URL and update the ticket**
+        $ticket->setQrcode('/qrcodes/ticket_' . $ticket->getId() . '.png');
+        
+        // Flush again to save the QR code path
         $entityManager->flush();
-
-        // Redirect back to the event display page with a success message
+    
+        // Redirect with success message
         $this->addFlash('success', 'You have successfully participated in the event!');
         return $this->redirectToRoute('event_display');
     }

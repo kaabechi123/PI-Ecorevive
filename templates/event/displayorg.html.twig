@@ -1,6 +1,8 @@
 {% extends 'orgbase.html.twig' %}
 
 {% block body %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <div class="page-header">
         <h3 class="page-title">
             <span class="page-title-icon bg-gradient-primary text-white me-2">
@@ -50,6 +52,12 @@
             </div>
         </div>
     </div>
+        <!-- Add Event Button -->
+    <div class="text-center mt-4">
+        <a href="{{ path('create_event2') }}" class="btn btn-primary btn-circle btn-lg">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
@@ -86,4 +94,24 @@
         $('#deleteModal').modal('hide');
     }
 </script>
+<style>
+    .btn-circle {
+        width: 60px;
+        height: 60px;
+        padding: 10px 16px;
+        border-radius: 30px;
+        font-size: 24px;
+        line-height: 1.33;
+        text-align: center;
+    }
+
+    .btn-circle.btn-lg {
+        width: 70px;
+        height: 70px;
+        padding: 10px 16px;
+        border-radius: 35px;
+        font-size: 28px;
+        line-height: 1.33;
+    }
+</style>
 {% endblock %}

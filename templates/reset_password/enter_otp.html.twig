@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('fonts/icomoon/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <title>Enter OTP</title>
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+      }
+      .d-lg-flex {
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+      }
+      .bg {
+        background-size: cover;
+        background-position: center;
+        height: 100%;
+      }
+      .contents {
+        padding: 50px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      h3 {
+        font-weight: 500;
+        margin-bottom: 30px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      .form-control {
+        margin-bottom: 20px;
+        border-radius: 4px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+      }
+      .form-control:focus {
+        border-color:rgb(0, 80, 15);
+        box-shadow: 0 0 5px rgba(0, 105, 217, 0.5);
+      }
+      button[type="submit"] {
+        padding: 10px;
+        background-color: #008000;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button[type="submit"]:hover {
+        background-color:rgb(3, 69, 28);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="d-lg-flex half">
+      <div class="bg order-1 order-md-2" style="background-image: url('{{ asset('images/bg_1.jpg') }}');"></div>
+      <div class="contents order-2 order-md-1">
+        <div class="container">
+          <div class="row align-items-center justify-content-center">
+            <div class="col-md-7">
+              <h3>Enter OTP to <strong>ECO Tounsi</strong></h3>
+              <form method="POST" action="{{ path('verify_otp') }}" class="your-form-class">
+                <input type="hidden" name="email" value="{{ email }}">
+                <div class="form-group">
+                  <input type="text" name="otp" class="form-control" placeholder="Enter OTP" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Verify OTP</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+  </body>
+</html>

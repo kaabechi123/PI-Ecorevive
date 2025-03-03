@@ -8,7 +8,14 @@
             <div class="card shadow-lg border-0">
                 <div class="card-body text-center p-4">
                     <!-- Profile Image -->
-                    <img src="{{ asset('images/profile_placeholder.png') }}" class="rounded-circle mb-3" alt="Profile Image" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<a href="{{ path('avatar_update') }}">
+    <img src="{{ user.avatar ? asset('uploads/avatars/' ~ user.avatar) : asset('images/profile_placeholder.png') }}" 
+         class="rounded-circle mb-3" 
+         alt="Profile Image" 
+         style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+</a>
+
+                    
                     <h3 class="card-title mb-2 font-weight-bold" style="color: #28a745;">{{ user.username }}</h3>
                     <p class="mb-0" style="color: #28a745;">{{ user.role }}</p>
                 </div>
@@ -98,7 +105,12 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong style="color: #28a745;">Ticket for: {{ ticket.event.name }}</strong>
+    
                                         <small class="d-block" style="color: #28a745;">{{ ticket.event.startDate|date('Y-m-d H:i') }}</small>
+
+                                                 <img src="{{ ticket.qrcode }}" alt="Ticket QR Code">
+                                                <span >     <a href="{{ path('tickets_download', {id: ticket.id}) }}" >Download</a> </span>
+
                                     </div>
 <span class="badge bg-success rounded-pill">Ticket</span>
                                 </li>

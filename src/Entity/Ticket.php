@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TicketRepository::class)]
+#[ORM\HasLifecycleCallbacks] // Enable lifecycle callbacks
+
 class Ticket
 {
     #[ORM\Id]
@@ -19,6 +21,9 @@ class Ticket
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     private ?User $owner = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $qrcode = null; 
 
     public function getId(): ?int
     {
@@ -48,4 +53,34 @@ class Ticket
 
         return $this;
     }
+    public function getQrcode(): ?string
+    {
+        return $this->qrcode;
+    }
+
+    public function setQrcode(?string $qrcode): static
+    {
+        $this->qrcode = $qrcode;
+
+        return $this;
+    }
+    #[ORM\PrePersist] // This method will be called automatically before the ticket is persisted (created)
+public function generateQrcode(): void
+{
+    // Ensure the ticket has an owner and event
+    if ($this->getOwner() && $this->getEvent()) {
+        // Prepare the ticket details as a JSON string
+        $ticketDetails = json_encode([
+            'ticket_id' => $this->getId(),
+            'owner' => $this->getOwner()->getUsername(), 
+            'event' => $this->getEvent()->getName(), 
+        ]);
+
+        // Store the ticket details in the QR code field
+        $this->setQrcode($ticketDetails);
+    } else {
+        // Handle case where owner or event is not set (optional)
+        throw new \RuntimeException('Ticket must have an owner and an event to generate a QR code.');
+    }
+}
 }

@@ -9,9 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File; // Add this use statement
+use Vich\UploaderBundle\Mapping\Annotation as Vich; // Add this use statement
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[Vich\Uploadable] // Add this annotation to make the entity uploadable
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serializable
 {
     #[ORM\Id]
@@ -42,6 +46,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serial
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $otp = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatar = null;
+
+    // Add this field for VichUploaderBundle
+    #[Vich\UploadableField(mapping: 'user_avatar', fileNameProperty: 'avatar')]
+    private ?File $avatarFile = null;
 
     /**
      * @var Collection<int, Event>
@@ -141,6 +152,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serial
     public function setOTP(?string $otp): static
     {
         $this->otp = $otp;
+
+        return $this;
+    }
+
+    // Add getter and setter for avatarFile
+    public function getAvatarFile(): ?File
+    {
+        return $this->avatarFile;
+    }
+
+    public function setAvatarFile(?File $avatarFile = null): void
+    {
+        $this->avatarFile = $avatarFile;
+
+        // Update the avatar field only if a file is uploaded
+        if ($avatarFile) {
+            $this->avatar = $avatarFile->getFilename(); // Or let Vich handle the filename
+        }
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }

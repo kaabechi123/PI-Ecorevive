@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .qr-code {
+            display: block;
+            margin: 20px auto;
+            width: 250px; /* Adjust the width as needed */
+            height: 250px; /* Adjust the height as needed */
+        }
+        .ticket-info {
+            border: 1px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket-info">
+        <h1>Ticket for {{ ticket.event.name }}</h1>
+        <p>Owner: {{ ticket.owner.username }}</p>
+        <p>QR Code:</p>
+        <img class="qr-code" src="file:///C:/xampp/htdocs/PI/public{{ ticket.qrcode }}" alt="Ticket QR Code">
+    </div>
+</body>
+</html>

@@ -18,6 +18,8 @@
                                 <tr>
                                     <th> Event </th>
                                     <th> Owner </th>
+                                      <th> QR Code </th>
+
                                     <th> Delete </th>
                                     <th> Update </th>
                                 </tr>
@@ -27,6 +29,9 @@
                                     <tr>
                                         <td>{{ ticket.event.name }}</td>
                                         <td>{{ ticket.owner.username }}</td>
+                                           <td>
+                                             <img src="{{ ticket.qrcode }}" alt="QR Code">
+                                            </td>
                                         <td>
                                             <a onclick="showDeleteModal('{{ ticket.id }}', {{ ticket.id }})" class="badge badge-gradient-danger">Delete</a>
                                         </td>

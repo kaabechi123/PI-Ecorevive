@@ -31,10 +31,14 @@ security:
 
 
     access_control:
-        - { path: ^/login, roles: PUBLIC_ACCESS }  # Login is accessible to everyone
-        - { path: ^/signup, roles: PUBLIC_ACCESS }  # Login is accessible to everyone
-        - { path: ^/dashboard, roles: ROLE_ADMIN }     # Admins can access /admin
-        - { path: ^/org, roles: ROLE_ORGANISATION } # Managers can access /organisation
-        - { path: ^/home, roles: ROLE_CLIENT }  # Users can access /home
-        - { path: ^/delivery, roles: ROLE_DELIVERY }          # can acces /
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY } # Force login for everything else
+    - { path: ^/login, roles: PUBLIC_ACCESS }  # Login is accessible to everyone
+    - { path: ^/signup, roles: PUBLIC_ACCESS }  # Signup is accessible to everyone
+    - { path: ^/forgot-password, roles: PUBLIC_ACCESS }  # Forgot password is accessible to everyone
+    - { path: ^/send-otp, roles: PUBLIC_ACCESS }  # Send OTP is accessible to everyone
+    - { path: ^/reset-password, roles: PUBLIC_ACCESS }  # reset password is accessible to everyone
+    - { path: ^/verify-otp, roles: PUBLIC_ACCESS }  # Verify OTP is accessible to everyone
+    - { path: ^/dashboard, roles: ROLE_ADMIN }  # Admins can access /dashboard
+    - { path: ^/org, roles: ROLE_ORGANISATION }  # Organisations can access /org
+    - { path: ^/home, roles: ROLE_CLIENT }  # Clients can access /home
+    - { path: ^/delivery, roles: ROLE_DELIVERY }  # Delivery can access /delivery
+    - { path: ^/, roles: IS_AUTHENTICATED_FULLY }  # Force login for everything else # Force login for everything else

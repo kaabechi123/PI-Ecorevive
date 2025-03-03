@@ -1,68 +1,79 @@
 {% extends 'dashboardbase.html.twig' %}
 
 {% block body %}
-    <div class="page-header">
-        <h3 class="page-title">
-            <span class="page-title-icon bg-gradient-primary text-white me-2">
-                <i class="mdi mdi-ticket"></i>
-            </span> Tickets
-        </h3>
-    </div>
-    <div class="row">
-        <div class="col-12 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
+<div class="page-header">
+    <h3 class="page-title">
+        <span class="page-title-icon bg-gradient-primary text-white me-2">
+            <i class="mdi mdi-ticket"></i>
+        </span> Tickets
+    </h3>
+</div>
+<div class="row">
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th> Event </th>
+                                <th> Owner </th>
+                                <th> QR Code </th>
+                                <th> Delete </th>
+                                <th> Update </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in pagination %}
                                 <tr>
-                                    <th> Event </th>
-                                    <th> Owner </th>
-                                    <th> Delete </th>
-                                    <th> Update </th>
+                                    <td>{{ ticket.event.name }}</td>
+                                    <td>{{ ticket.owner.username }}</td>
+                                    <td>
+                                        <img src="{{ ticket.qrcode }}" alt="QR Code">
+                                    </td>
+                                    <td>
+                                        <a onclick="showDeleteModal('{{ ticket.id }}', {{ ticket.id }})" class="badge badge-gradient-danger">Delete</a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('update_ticket', {id: ticket.id}) }}" class="badge badge-gradient-info">Update</a>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {% for ticket in tickets %}
-                                    <tr>
-                                        <td>{{ ticket.event.name }}</td>
-                                        <td>{{ ticket.owner.username }}</td>
-                                        <td>
-                                            <a onclick="showDeleteModal('{{ ticket.id }}', {{ ticket.id }})" class="badge badge-gradient-danger">Delete</a>
-                                        </td>
-                                        <td>
-                                            <a href="{{ path('update_ticket', {id: ticket.id}) }}" class="badge badge-gradient-info">Update</a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5">No tickets found.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    {{ knp_pagination_render(pagination) }}
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Deletion</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="deleteMessage"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">No</button>
-                    <button type="button" id="confirmDeleteButton" class="btn btn-danger">Yes, Delete</button>
-                </div>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">No</button>
+                <button type="button" id="confirmDeleteButton" class="btn btn-danger">Yes, Delete</button>
             </div>
         </div>
     </div>
+</div>
 
 <script>
     function showDeleteModal(ticketId, ticketEntityId) {

@@ -10,17 +10,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\TicketRepository;
+use Knp\Component\Pager\PaginatorInterface;
+use Knp\Snappy\Pdf;
 
 final class TicketController extends AbstractController
 {
     #[Route('/dashboard/tickets', name: 'dashboard_tickets')]
-    public function displayTickets(TicketRepository $ticketRepository): Response
+    public function displayTickets(Request $request, TicketRepository $ticketRepository, PaginatorInterface $paginator): Response
     {
         // Fetch all tickets from the database
-        $tickets = $ticketRepository->findAll();
-
+        $ticketsQuery = $ticketRepository->findAll(); // This should be a query builder or a query
+    
+        // Paginate the results
+        $pagination = $paginator->paginate(
+            $ticketsQuery, // Query NOT result
+            $request->query->getInt('page', 1), // Page number
+            10 // Limit per page (you can adjust this)
+        );
+    
         return $this->render('ticket/displaydashboard.html.twig', [
-            'tickets' => $tickets,
+            'pagination' => $pagination,
         ]);
     }
 
@@ -122,6 +131,35 @@ public function displayTickets2(EntityManagerInterface $entityManager): Response
         return $this->render('ticket/updateorg.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+    #[Route('/tickets/download/{id}', name: 'tickets_download', methods: ['GET'])]
+    public function downloadTicketPdf(int $id, TicketRepository $ticketRepository, Pdf $knpSnappy): Response
+    {
+        $ticket = $ticketRepository->find($id);
+    
+        if (!$ticket) {
+            throw $this->createNotFoundException('Ticket not found');
+        }
+    
+        // Render the HTML view for the PDF
+        $html = $this->renderView('ticket/ticket_pdf.html.twig', [
+            'ticket' => $ticket,
+        ]);
+    
+        // Generate the PDF with local file access enabled
+        $pdfContent = $knpSnappy->getOutputFromHtml($html, [
+            'enable-local-file-access' => true, // Enable local file access
+        ]);
+    
+        // Return the PDF as a response
+        return new Response(
+            $pdfContent,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="ticket_' . $ticket->getId() . '.pdf"',
+            ]
+        );
     }
 
 }
